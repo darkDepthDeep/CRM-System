@@ -1,0 +1,91 @@
+.tabs-body__input-text {
+    display: none;
+    width: 200px;
+    position: absolute;
+    border-bottom: solid rgb(219,222,227);
+    left: 27px
+}
+
+.input-error::placeholder {
+  color: red;
+  font-size: 10px;
+  padding: 2px;
+}
+
+.tabs-body__label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.tabs-body__label:before {
+    content: '';
+    position: absolute;
+    visibility: visible;
+    left: 0;
+    top: 2px;
+    z-index: 5;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f1f1ef;
+    border-radius: 50%;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color .2s, border .2s;
+}
+
+.tabs-body__label:after {
+    content: '';
+    position: absolute;
+    visibility: visible;
+    left: 4px;
+    top: 6px;
+    z-index: 10;
+    width: 15px;
+    height: 15px;
+    background: url(../images/icons-19.svg) no-repeat;
+    background-size: 12px 12px;
+    opacity: 0;
+    scale: 0;
+    transition: opacity .2s, scale .2s;
+}
+
+.tabs-body__wrap-btn {
+    display: flex;
+    gap: 5px;
+}
+
+.tabs-body__wrap-btn--indent {
+    margin-left: 215px;
+}
+
+.tabs-body__wrap-btn button {
+    transition: scale 0.1s;
+    width: 25px;
+    height: 25px;
+    border: none;
+}
+
+.tabs-body__wrap-btn button:active {
+    scale: 0.95;
+
+}
+
+.tabs-body__wrap-btn img {
+    pointer-events: none;
+    object-fit: contain;
+}
+
+.tabs-body__text  {
+    visibility: visible;
+    width: 200px;
+    min-height: 19px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #2f2d2e;
+    z-index: 0;
+}
