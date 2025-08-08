@@ -1,43 +1,59 @@
 export async function fetchTodoList(filter) {
-  const response = await fetch(
-    `https://easydev.club/api/v1/todos?filter=${filter}`
-  );
-  const resData = await response.json();
+  try {
+    const response = await fetch(
+      `https://easydev.club/api/v1/todos?filter=${filter}`
+    );
+    const resData = await response.json();
 
-  return resData;
+    return resData;
+  } catch (error) {
+    throw error;
+  }
 }
 
-export async function addTaskList(data) {
-  const response = await fetch("https://easydev.club/api/v1/todos", {
-    method: "POST",
-    body: JSON.stringify({
-      title: data,
-      isDone: false,
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export async function addTask(data) {
+  try {
+    const response = await fetch("https://easydev.club/api/v1/todos", {
+      method: "POST",
+      body: JSON.stringify({
+        title: data,
+        isDone: false,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  const resData = await response.json();
+    const resData = await response.json();
 
-  return resData;
+    return resData;
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function updateTask(id, data) {
-  const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  return await response.json();
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function deleteTask(id) {
-  await fetch(`https://easydev.club/api/v1/todos/${id}`, {
-    method: "DELETE",
-  });
+  try {
+    await fetch(`https://easydev.club/api/v1/todos/${id}`, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    throw error;
+  }
 }
