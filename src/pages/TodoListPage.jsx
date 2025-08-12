@@ -59,10 +59,8 @@ export default function TodoListPage() {
       <TodoList
         tasks={tasks}
         active={active}
-        setError={setError}
         getTasks={getTasks}
         loading={loading}
-        error={error}
         validateTodoTitle={validateTodoTitle}
       />
     </div>
