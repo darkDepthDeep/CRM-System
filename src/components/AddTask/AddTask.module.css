@@ -8,7 +8,7 @@
     }
 }
 
-.add-task__btn[type="submit"] {
+.add-task__btn {
     width: 90px;
     height: 35px;
     border: none;

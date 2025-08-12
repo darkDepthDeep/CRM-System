@@ -4,18 +4,7 @@ import TodoList from "../TodoList/TodoList.jsx";
 
 import styles from "./Tabs.module.css";
 
-export default function Tabs({
-  error,
-  setError,
-  tasks,
-  setTasks,
-  counter,
-  setCounter,
-  active,
-  setActive,
-  getTasks,
-  loading,
-}) {
+export default function Tabs({ error, counter, active, setActive, getTasks }) {
   useEffect(() => {
     getTasks();
   }, [active]);
@@ -51,17 +40,6 @@ export default function Tabs({
           сделано({counter?.completed || "0"})
         </button>
       </div>
-
-      <TodoList
-        tasks={tasks}
-        setTasks={setTasks}
-        active={active}
-        setCounter={setCounter}
-        setError={setError}
-        getTasks={getTasks}
-        loading={loading}
-        error={error}
-      />
     </>
   );
 }

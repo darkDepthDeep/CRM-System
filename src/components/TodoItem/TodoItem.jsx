@@ -1,28 +1,24 @@
 import { useState } from "react";
-import { updateTask, deleteTask, fetchTodoList } from "../../api/http";
+import { updateTask, deleteTask } from "../../api/http";
 
 import styles from "./TodoItem.module.css";
 
-export default function TodoItem({
-  item,
-  tasks,
-  setTasks,
-  setCounter,
-  setError,
-  getTasks,
-}) {
-  const [idTask, setIdTask] = useState();
-  const [originalTitle, setOriginalTitle] = useState({});
-  const [validateError, setValidateError] = useState();
+export default function TodoItem({ item, getTasks, validateTodoTitle }) {
+  const [editTitle, setEditTitle] = useState("");
+  const [validateError, setValidateError] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleChange = async (item) => {
+  const handleChange = async () => {
+    setError(null);
+
     try {
       await updateTask(item.id, {
         title: item.title,
         isDone: !item.isDone,
       });
 
-      getTasks();
+      await getTasks();
     } catch (error) {
       console.error(error);
       setError({
@@ -31,51 +27,37 @@ export default function TodoItem({
     }
   };
 
-  const updateTaskTitle = (id, text) => {
-    setTasks(
-      tasks.map((task) => (task.id === id ? { ...task, title: text } : task))
-    );
+  const handleStartEdit = () => {
+    setEditTitle(item.title);
+    setIsEditMode(true);
+    setValidateError("");
   };
 
-  const handleStartEdit = (item) => {
-    setOriginalTitle((prev) => ({ ...prev, [item.id]: item.title }));
-    setIdTask(item.id);
-    setValidateError();
+  const handleCancelEdit = () => {
+    getTasks();
+    setIsEditMode(false);
+    setValidateError("");
   };
 
-  const handleCancelEdit = (id) => {
-    updateTaskTitle(id, originalTitle[id]);
-    setIdTask();
-    setValidateError();
-  };
+  const handleSaveEdit = async () => {
+    setError(null);
+    setValidateError("");
 
-  const handleSaveEdit = async (id, newValue, isDone) => {
-    setValidateError();
-
-    if (!newValue || newValue.trim() === "") {
-      updateTaskTitle(id, "");
-      setValidateError("Это поле не может быть пустым!");
-      return;
-    } else if (newValue.length < 2) {
-      updateTaskTitle(id, "");
-      setValidateError("Минимальная длина текста 2 символа!");
-      return;
-    } else if (newValue.length > 64) {
-      updateTaskTitle(id, "");
-      setValidateError("Максимальная длина текста 64 символа!");
+    const error = validateTodoTitle(editTitle);
+    if (error) {
+      setValidateError(error);
       return;
     }
 
     try {
-      const updatedTask = await updateTask(id, {
-        title: newValue,
-        isDone: isDone,
+      await updateTask(item.id, {
+        title: editTitle,
+        isDone: item.isDone,
       });
 
-      updateTaskTitle(id, updatedTask.title);
-      getTasks();
-      setIdTask();
-      setValidateError();
+      await getTasks();
+      setIsEditMode(false);
+      setValidateError("");
     } catch (error) {
       console.error(error);
       setError({
@@ -84,12 +66,12 @@ export default function TodoItem({
     }
   };
 
-  const handleDeleteTask = async (id) => {
+  const handleDeleteTask = async () => {
+    setError(null);
+
     try {
-      await deleteTask(id);
-      const data = await fetchTodoList("all");
-      setTasks(tasks.filter((task) => task.id !== id));
-      setCounter(data.info);
+      await deleteTask(item.id);
+      await getTasks();
     } catch (error) {
       console.error(error);
       setError({
@@ -98,7 +80,9 @@ export default function TodoItem({
     }
   };
 
-  return (
+  return error ? (
+    <div className={styles["tabs-error"]}>{error.message}</div>
+  ) : (
     <li className={styles["tabs-body__list"]}>
       <div className={styles["tabs-body__wrap-input"]}>
         <input
@@ -106,27 +90,28 @@ export default function TodoItem({
           id={item.id}
           type="checkbox"
           checked={item.isDone}
-          onChange={() => handleChange(item)}
+          onChange={handleChange}
         />
-        {idTask === item.id ? (
+        {isEditMode ? (
           <>
             <input
               id={`edit-${item.id}`}
               type="text"
-              className={`${styles["tabs-body__input-text"]} ${
-                validateError ? styles["input-error"] : ""
-              }`}
-              value={item.title}
+              className={`${styles["tabs-body__input-text"]}`}
+              value={editTitle}
               onChange={(e) => {
-                updateTaskTitle(item.id, e.target.value);
-                if (validateError) setValidateError();
+                setEditTitle(e.target.value);
+                if (validateError) setValidateError("");
               }}
-              placeholder={validateError || "Введите текст"}
+              placeholder={"Введите текст"}
               style={{
                 display: "block",
                 borderColor: validateError ? "red" : "rgb(219,222,227)",
               }}
             />
+            {validateError && (
+              <div className={styles["validate-error"]}>{validateError}</div>
+            )}
             <label
               className={styles["tabs-body__label"]}
               htmlFor={item.id}
@@ -137,13 +122,13 @@ export default function TodoItem({
             >
               <button
                 className={styles["tabs-body__edit"]}
-                onClick={() => handleSaveEdit(item.id, item.title, item.isDone)}
+                onClick={handleSaveEdit}
               >
                 <img src="./images/saved.png" alt="Сохранить" />
               </button>
               <button
                 className={styles["tabs-body__delete"]}
-                onClick={() => handleCancelEdit(item.id)}
+                onClick={handleCancelEdit}
               >
                 <img src="./images/cancel.png" alt="Удалить" />
               </button>
@@ -168,11 +153,11 @@ export default function TodoItem({
             <div className={styles["tabs-body__wrap-btn"]}>
               <button
                 className={styles["tabs-body__edit"]}
-                onClick={() => handleStartEdit(item)}
+                onClick={handleStartEdit}
               >
                 <img src="./images/compose.png" alt="edit" />
               </button>
-              <button onClick={() => handleDeleteTask(item.id)}>
+              <button onClick={handleDeleteTask}>
                 <img src="./images/bin.png" alt="delete" />
               </button>
             </div>

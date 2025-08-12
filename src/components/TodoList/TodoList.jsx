@@ -5,13 +5,12 @@ import styles from "./TodoList.module.css";
 
 export default function todoList({
   tasks,
-  setTasks,
   active,
-  setCounter,
   setError,
   error,
   getTasks,
   loading,
+  validateTodoTitle,
 }) {
   return (
     <ul className={`${styles["tabs-body"]} ${active ? styles["active"] : ""}`}>
@@ -24,11 +23,8 @@ export default function todoList({
           <TodoItem
             key={item.id}
             item={item}
-            tasks={tasks}
-            setTasks={setTasks}
-            setCounter={setCounter}
-            setError={setError}
             getTasks={getTasks}
+            validateTodoTitle={validateTodoTitle}
           />
         ))
       )}
