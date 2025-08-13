@@ -34,7 +34,6 @@ export default function TodoItem({ item, getTasks, validateTodoTitle }) {
   };
 
   const handleCancelEdit = () => {
-    getTasks();
     setIsEditMode(false);
     setValidateError("");
   };
