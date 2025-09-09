@@ -1,15 +1,16 @@
-import { useState } from "react";
 import TodoItem from "../TodoItem/TodoItem";
+
+import type { TodoListProps } from "../../types/types";
 
 import styles from "./TodoList.module.css";
 
-export default function todoList({
+ const TodoList: React.FC<TodoListProps> = ({
   tasks,
   active,
   getTasks,
   loading,
   validateTodoTitle,
-}) {
+}) => {
   return (
     <ul className={`${styles["tabs-body"]} ${active ? styles["active"] : ""}`}>
       {loading ? (
@@ -27,3 +28,5 @@ export default function todoList({
     </ul>
   );
 }
+
+export default TodoList;

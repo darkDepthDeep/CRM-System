@@ -1,15 +1,19 @@
+import React from "react";
+
 import { useState } from "react";
 import { updateTask, deleteTask } from "../../api/http";
 
+import type { TodoItemProps } from "../../types/types";
+
 import styles from "./TodoItem.module.css";
 
-export default function TodoItem({ item, getTasks, validateTodoTitle }) {
-  const [editTitle, setEditTitle] = useState("");
-  const [validateError, setValidateError] = useState("");
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [error, setError] = useState("");
+ const TodoItem: React.FC<TodoItemProps> =  ({ item, getTasks, validateTodoTitle }) => {
+  const [editTitle, setEditTitle] = useState<string>("");
+  const [validateError, setValidateError] = useState<string>("");
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [error, setError] = useState<{message: string} | null>(null);
 
-  const handleChange = async () => {
+  const handleChange = async (): Promise<void> => {
     setError(null);
 
     try {
@@ -22,23 +26,24 @@ export default function TodoItem({ item, getTasks, validateTodoTitle }) {
     } catch (error) {
       console.error(error);
       setError({
-        message: "Что то пошло не так, попробуйте позже.",
+        message: "Что то пошло не так, попробуйте позже!",
       });
+      
     }
   };
 
-  const handleStartEdit = () => {
+  const handleStartEdit = (): void => {
     setEditTitle(item.title);
     setIsEditMode(true);
     setValidateError("");
   };
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = (): void => {
     setIsEditMode(false);
     setValidateError("");
   };
 
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = async (): Promise<void> => {
     setError(null);
     setValidateError("");
 
@@ -57,27 +62,32 @@ export default function TodoItem({ item, getTasks, validateTodoTitle }) {
       await getTasks();
       setIsEditMode(false);
       setValidateError("");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       setError({
-        message: "Что то пошло не так, попробуйте позже.",
+        message: "Что то пошло не так, попробуйте позже!",
       });
     }
   };
 
-  const handleDeleteTask = async () => {
+  const handleDeleteTask = async (): Promise<void> => {
     setError(null);
 
     try {
       await deleteTask(item.id);
       await getTasks();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       setError({
-        message: "Что то пошло не так, попробуйте позже.",
+        message: "Что то пошло не так, попробуйте позже!",
       });
     }
   };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setEditTitle(e.target.value);
+    if (validateError) setValidateError("");
+  }
 
   return error ? (
     <div className={styles["tabs-error"]}>{error.message}</div>
@@ -86,7 +96,7 @@ export default function TodoItem({ item, getTasks, validateTodoTitle }) {
       <div className={styles["tabs-body__wrap-input"]}>
         <input
           className={styles["tabs-body__input-checkbox"]}
-          id={item.id}
+          id={item.id.toString()}
           type="checkbox"
           checked={item.isDone}
           onChange={handleChange}
@@ -98,10 +108,7 @@ export default function TodoItem({ item, getTasks, validateTodoTitle }) {
               type="text"
               className={`${styles["tabs-body__input-text"]}`}
               value={editTitle}
-              onChange={(e) => {
-                setEditTitle(e.target.value);
-                if (validateError) setValidateError("");
-              }}
+              onChange={handleEditChange}
               placeholder={"Введите текст"}
               style={{
                 display: "block",
@@ -113,7 +120,7 @@ export default function TodoItem({ item, getTasks, validateTodoTitle }) {
             )}
             <label
               className={styles["tabs-body__label"]}
-              htmlFor={item.id}
+              htmlFor={item.id.toString()}
               style={{ display: "none" }}
             ></label>
             <div
@@ -137,7 +144,7 @@ export default function TodoItem({ item, getTasks, validateTodoTitle }) {
           <>
             <label
               className={styles["tabs-body__label"]}
-              htmlFor={item.id}
+              htmlFor={item.id.toString()}
               style={{ display: "block" }}
             ></label>
             <span
@@ -166,3 +173,6 @@ export default function TodoItem({ item, getTasks, validateTodoTitle }) {
     </li>
   );
 }
+
+
+export default TodoItem;

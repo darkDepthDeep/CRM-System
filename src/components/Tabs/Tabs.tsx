@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import { fetchTodoList } from "../../api/http.js";
-import TodoList from "../TodoList/TodoList.jsx";
+import { useEffect } from "react";
+
+import type { TabsProps, ParameterFilter } from "../../types/types";
 
 import styles from "./Tabs.module.css";
 
-export default function Tabs({ error, counter, active, setActive, getTasks }) {
+ const Tabs: React.FC<TabsProps> = ({ error, counter, active, setActive, getTasks }) => {
   useEffect(() => {
     getTasks();
   }, [active]);
 
-  const handleClickShow = (status) => {
+  const handleClickShow = (status: ParameterFilter): void => {
     setActive(status);
   };
 
@@ -43,3 +43,5 @@ export default function Tabs({ error, counter, active, setActive, getTasks }) {
     </>
   );
 }
+
+export default Tabs;

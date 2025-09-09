@@ -1,28 +1,37 @@
 import { useState } from "react";
-import { fetchTodoList } from "../api/http.js";
+import { fetchTodoList } from "../api/http.ts";
 
-import AddTask from "../components/AddTask/AddTask.jsx";
-import Tabs from "../components/Tabs/Tabs.jsx";
-import TodoList from "../components/TodoList/TodoList.jsx";
+import type { Task, Info, ParameterFilter } from "../types/types.ts";
+
+import AddTask from "../components/AddTask/AddTask.tsx";
+import Tabs from "../components/Tabs/Tabs.tsx";
+import TodoList from "../components/TodoList/TodoList.tsx";
 
 import styles from "./TodoListPage.module.css";
 
-export default function TodoListPage() {
-  const [tasks, setTasks] = useState([]);
-  const [counter, setCounter] = useState();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [active, setActive] = useState("all");
+  const TodoListPage: React.FC = () => {
 
-  const getTasks = async () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [counter, setCounter] = useState<Info | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<{message: string} | null>(null);
+  const [active, setActive] = useState<ParameterFilter>("all");
+
+  const getTasks = async (): Promise<void> => {
     setError(null);
 
     try {
       const data = await fetchTodoList(active);
       setTasks(data.data);
+      if(data.info) {
       setCounter(data.info);
+      } else {
+        setCounter(null)
+      }
       setLoading(false);
     } catch (error) {
+
+      console.error(error)
       setError({
         message: "Не удалось получить данные.",
       });
@@ -30,8 +39,8 @@ export default function TodoListPage() {
     }
   };
 
-  const validateTodoTitle = (title) => {
-    const trimmedTitle = title.trim();
+  const validateTodoTitle = (title: string): string | null => {
+    const trimmedTitle: string = title.trim();
 
     if (trimmedTitle === "") {
       return "Это поле не может быть пустым!";
@@ -44,6 +53,8 @@ export default function TodoListPage() {
     if (trimmedTitle.length > 64) {
       return "Максимальная длина текста 64 символа!";
     }
+
+    return null;
   };
 
   return (
@@ -66,3 +77,6 @@ export default function TodoListPage() {
     </div>
   );
 }
+
+
+export default TodoListPage;

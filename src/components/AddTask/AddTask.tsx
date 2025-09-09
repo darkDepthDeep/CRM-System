@@ -1,14 +1,16 @@
-import { act, useState } from "react";
-import { addTask, fetchTodoList } from "../../api/http";
+import React, { useState } from "react";
+import { addTask } from "../../api/http";
+
+import type { AddTaskProps } from "../../types/types";
 
 import styles from "./AddTask.module.css";
 
-export default function AddTask({ getTasks, validateTodoTitle }) {
-  const [title, setTitle] = useState("");
-  const [validateError, setValidateError] = useState("");
-  const [error, setError] = useState("");
+  const AddTask: React.FC<AddTaskProps> = ({ getTasks, validateTodoTitle }) => {
+  const [title, setTitle] = useState<string>("");
+  const [validateError, setValidateError] = useState<string>("");
+  const [error, setError] = useState<{message: string} | null>(null);
 
-  const handleSubmitTodo = async (e) => {
+  const handleSubmitTodo = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
     const error = validateTodoTitle(title);
@@ -31,6 +33,8 @@ export default function AddTask({ getTasks, validateTodoTitle }) {
     }
   };
 
+  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>): void => setTitle(e.target.value)
+
   return error ? (
     <div className={styles["tabs-error"]}>{error.message}</div>
   ) : (
@@ -44,7 +48,7 @@ export default function AddTask({ getTasks, validateTodoTitle }) {
         className={styles["add-task__input"]}
         placeholder="Task To Be Done..."
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={handleValueChange}
       />
       <button className={styles["add-task__btn"]}>Add</button>
       {validateError && (
@@ -53,3 +57,5 @@ export default function AddTask({ getTasks, validateTodoTitle }) {
     </form>
   );
 }
+
+export default AddTask;
