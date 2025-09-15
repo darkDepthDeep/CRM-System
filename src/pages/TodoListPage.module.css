@@ -1,0 +1,11 @@
+.todo-list {
+  padding: 20px;
+  background: linear-gradient(#f1f4fb, #c4c7cc);
+}
+
+.tabs-error {
+    width: 320px;
+    padding-top: 10px;
+    color: red;
+    text-align: center;
+}
