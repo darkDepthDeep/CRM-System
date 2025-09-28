@@ -2,20 +2,20 @@ import React from "react";
 
 import { useState } from "react";
 import { updateTask, deleteTask } from "../../api/http";
+import {Input, Form, message, Checkbox, Button, Space, Typography, List} from 'antd';
+import { validationTaskTitle } from "../../utils/validation";
+import {SaveOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons'
 
 import type { TodoItemProps } from "../../types/types";
 
 import styles from "./TodoItem.module.css";
 
- const TodoItem: React.FC<TodoItemProps> =  ({ item, getTasks, validateTodoTitle }) => {
-  const [editTitle, setEditTitle] = useState<string>("");
-  const [validateError, setValidateError] = useState<string>("");
+ const TodoItem: React.FC<TodoItemProps> =  ({ item, getTasks }) => {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const [error, setError] = useState<{message: string} | null>(null);
+  const [form] = Form.useForm();
+  const [showMessage, messagePlace] = message.useMessage();
 
   const handleChange = async (): Promise<void> => {
-    setError(null);
-
     try {
       await updateTask(item.id, {
         title: item.title,
@@ -25,129 +25,92 @@ import styles from "./TodoItem.module.css";
       await getTasks();
     } catch (error) {
       console.error(error);
-      setError({
-        message: "Что то пошло не так, попробуйте позже!",
-      });
-      
+      showMessage.error("Что то пошло не так, попробуйте позже!");     
     }
   };
 
   const handleStartEdit = (): void => {
-    setEditTitle(item.title);
+    form.setFieldValue('title', item.title);
     setIsEditMode(true);
-    setValidateError("");
   };
 
   const handleCancelEdit = (): void => {
     setIsEditMode(false);
-    setValidateError("");
+    form.resetFields();
   };
 
-  const handleSaveEdit = async (): Promise<void> => {
-    setError(null);
-    setValidateError("");
-
-    const error = validateTodoTitle(editTitle);
-    if (error) {
-      setValidateError(error);
-      return;
-    }
-
+  const handleSaveEdit = async (values: {title: string}): Promise<void> => {
     try {
       await updateTask(item.id, {
-        title: editTitle,
+        title: values.title.trim(),
         isDone: item.isDone,
       });
 
       await getTasks();
       setIsEditMode(false);
-      setValidateError("");
     } catch (error: unknown) {
       console.error(error);
-      setError({
-        message: "Что то пошло не так, попробуйте позже!",
-      });
+      showMessage.error("Что то пошло не так, попробуйте позже!"); 
     }
   };
 
   const handleDeleteTask = async (): Promise<void> => {
-    setError(null);
-
     try {
       await deleteTask(item.id);
       await getTasks();
     } catch (error: unknown) {
       console.error(error);
-      setError({
-        message: "Что то пошло не так, попробуйте позже!",
-      });
+      showMessage.error("Что то пошло не так, попробуйте позже!");
     }
   };
 
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setEditTitle(e.target.value);
-    if (validateError) setValidateError("");
-  }
-
-  return error ? (
-    <div className={styles["tabs-error"]}>{error.message}</div>
-  ) : (
-    <li className={styles["tabs-body__list"]}>
-      <div className={styles["tabs-body__wrap-input"]}>
-        <input
-          className={styles["tabs-body__input-checkbox"]}
-          id={item.id.toString()}
-          type="checkbox"
+  return  (
+    <List.Item className={styles["tabs-body__list"]}>
+      <Space.Compact className={styles["tabs-body__wrap-input"]}>
+        <Checkbox
           checked={item.isDone}
           onChange={handleChange}
+          className={`${isEditMode ? styles["tabs-body__input-checkbox"] : ''}`}
         />
         {isEditMode ? (
           <>
-            <input
-              id={`edit-${item.id}`}
-              type="text"
-              className={`${styles["tabs-body__input-text"]}`}
-              value={editTitle}
-              onChange={handleEditChange}
-              placeholder={"Введите текст"}
-              style={{
-                display: "block",
-                borderColor: validateError ? "red" : "rgb(219,222,227)",
-              }}
-            />
-            {validateError && (
-              <div className={styles["validate-error"]}>{validateError}</div>
-            )}
-            <label
-              className={styles["tabs-body__label"]}
-              htmlFor={item.id.toString()}
-              style={{ display: "none" }}
-            ></label>
-            <div
-              className={`${styles["tabs-body__wrap-btn"]} ${styles["tabs-body__wrap-btn--indent"]}`}
+            {messagePlace}
+            <Form
+              form={form}
+              onFinish={handleSaveEdit}
+              autoComplete="off"
+              initialValues={{ title: item.title }}
             >
-              <button
-                className={styles["tabs-body__edit"]}
-                onClick={handleSaveEdit}
-              >
-                <img src="./images/saved.png" alt="Сохранить" />
-              </button>
-              <button
-                className={styles["tabs-body__delete"]}
-                onClick={handleCancelEdit}
-              >
-                <img src="./images/cancel.png" alt="Удалить" />
-              </button>
-            </div>
+                <Form.Item
+                  name="title"
+                  rules={validationTaskTitle}
+                >
+                  <Input 
+                    placeholder="Введите текст"
+                    variant="borderless"
+                    className={`${styles['tabs-body__input-text']} ${isEditMode ? styles['tabs-body__input-text--visible'] : ''}`}
+                    />
+                </Form.Item>
+
+                <Space size="small">
+                  <Button 
+                    type="primary"
+                    icon={<SaveOutlined />}
+                    htmlType="submit"
+                    size="small"
+                  />
+
+                  <Button 
+                    icon={<CloseOutlined />} 
+                    onClick={handleCancelEdit}
+                    size="small"
+                  />
+                </Space>
+            </Form>
           </>
         ) : (
           <>
-            <label
-              className={styles["tabs-body__label"]}
-              htmlFor={item.id.toString()}
-              style={{ display: "block" }}
-            ></label>
-            <span
+            <Typography.Text
               className={styles["tabs-body__text"]}
               style={{
                 textDecoration: item.isDone ? "line-through" : "none",
@@ -155,22 +118,25 @@ import styles from "./TodoItem.module.css";
               }}
             >
               {item.title}
-            </span>
-            <div className={styles["tabs-body__wrap-btn"]}>
-              <button
-                className={styles["tabs-body__edit"]}
+            </Typography.Text>
+            <Space className={styles["tabs-body__wrap-btn"]}>
+              <Button 
+                icon={<EditOutlined style={{color: '#0000ff'}}/>}
                 onClick={handleStartEdit}
-              >
-                <img src="./images/compose.png" alt="edit" />
-              </button>
-              <button onClick={handleDeleteTask}>
-                <img src="./images/bin.png" alt="delete" />
-              </button>
-            </div>
+                type="text"
+              />
+              <Button 
+                icon={<DeleteOutlined />} 
+                onClick={handleDeleteTask}
+                size="small"
+                type="text"
+                danger
+              />
+            </Space>
           </>
         )}
-      </div>
-    </li>
+      </Space.Compact>
+    </List.Item>
   );
 }
 

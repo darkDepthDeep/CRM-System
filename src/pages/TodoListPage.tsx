@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchTodoList } from "../api/http.ts";
+
+import {Space, message} from 'antd'
 
 import type { Task, Info, ParameterFilter } from "../types/types.ts";
 
@@ -14,11 +16,10 @@ import styles from "./TodoListPage.module.css";
   const [tasks, setTasks] = useState<Task[]>([]);
   const [counter, setCounter] = useState<Info | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<{message: string} | null>(null);
   const [active, setActive] = useState<ParameterFilter>("all");
+  const [showMessage, messagePlace] = message.useMessage();
 
-  const getTasks = async (): Promise<void> => {
-    setError(null);
+  const getTasks = useCallback (async (): Promise<void> => {
 
     try {
       const data = await fetchTodoList(active);
@@ -32,36 +33,23 @@ import styles from "./TodoListPage.module.css";
     } catch (error) {
 
       console.error(error)
-      setError({
-        message: "Не удалось получить данные.",
-      });
+      showMessage.error("Не удалось получить данные.")
+
       setLoading(false);
     }
-  };
+  }, [active]);
 
-  const validateTodoTitle = (title: string): string | null => {
-    const trimmedTitle: string = title.trim();
-
-    if (trimmedTitle === "") {
-      return "Это поле не может быть пустым!";
-    }
-
-    if (trimmedTitle.length < 2) {
-      return "Минимальная длина текста 2 символа!";
-    }
-
-    if (trimmedTitle.length > 64) {
-      return "Максимальная длина текста 64 символа!";
-    }
-
-    return null;
-  };
+  useEffect(() => {
+    getTasks();
+    const interval = setInterval(getTasks, 5000);
+    return () => clearInterval(interval)
+  }, [getTasks]);
 
   return (
-    <div className={styles["todo-list"]}>
-      <AddTask getTasks={getTasks} validateTodoTitle={validateTodoTitle} />
+    <Space.Compact className={styles["todo-list"]} style={{display: "block"}}>
+      {messagePlace}
+      <AddTask getTasks={getTasks} />
       <Tabs
-        error={error}
         counter={counter}
         active={active}
         setActive={setActive}
@@ -72,9 +60,8 @@ import styles from "./TodoListPage.module.css";
         active={active}
         getTasks={getTasks}
         loading={loading}
-        validateTodoTitle={validateTodoTitle}
       />
-    </div>
+    </Space.Compact>
   );
 }
 

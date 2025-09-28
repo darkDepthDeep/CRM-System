@@ -1,5 +1,6 @@
 import TodoItem from "../TodoItem/TodoItem";
 
+import {List, Spin, Space, Typography} from 'antd';
 import type { TodoListProps } from "../../types/types";
 
 import styles from "./TodoList.module.css";
@@ -9,23 +10,24 @@ import styles from "./TodoList.module.css";
   active,
   getTasks,
   loading,
-  validateTodoTitle,
 }) => {
   return (
-    <ul className={`${styles["tabs-body"]} ${active ? styles["active"] : ""}`}>
+    <List className={`${styles["tabs-body"]} ${active ? styles["active"] : ""}`}>
       {loading ? (
-        <p>Загрузка данных...</p>
+          <Space>
+            <Spin size="large"></Spin> 
+            <Typography.Text style={{marginLeft: "5px"}}>Загрузка данных...</Typography.Text>
+          </Space>
       ) : (
         tasks?.map((item) => (
           <TodoItem
             key={item.id}
             item={item}
             getTasks={getTasks}
-            validateTodoTitle={validateTodoTitle}
           />
         ))
       )}
-    </ul>
+    </List>
   );
 }
 

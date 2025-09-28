@@ -38,7 +38,6 @@ interface TodoItem {
 export interface TodoItemProps {
     item: TodoItem;
     getTasks: () => Promise<void>;
-    validateTodoTitle: (title: string) => string | null;
 };
 
 export interface TodoListProps {
@@ -46,11 +45,9 @@ export interface TodoListProps {
   active: ParameterFilter;
   getTasks: () => Promise<void>;
   loading: boolean;
-  validateTodoTitle: (title: string) => string | null;
 }
 
 export interface TabsProps {
-    error: {message: string} | null;
     counter: Info | null;
     active: ParameterFilter;
     setActive: React.Dispatch<React.SetStateAction<ParameterFilter>>;
@@ -59,6 +56,5 @@ export interface TabsProps {
 
 export interface AddTaskProps {
     getTasks: () => Promise<void>;
-    validateTodoTitle: (title: string) => string | null
 }
 
