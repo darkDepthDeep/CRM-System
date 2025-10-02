@@ -51,7 +51,6 @@ export interface TabsProps {
     counter: Info | null;
     active: ParameterFilter;
     setActive: React.Dispatch<React.SetStateAction<ParameterFilter>>;
-    getTasks: () => Promise<void>;
 }
 
 export interface AddTaskProps {

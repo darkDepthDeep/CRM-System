@@ -53,7 +53,6 @@ import styles from "./TodoListPage.module.css";
         counter={counter}
         active={active}
         setActive={setActive}
-        getTasks={getTasks}
       />
       <TodoList
         tasks={tasks}

@@ -53,4 +53,4 @@ import styles from "./AddTask.module.css";
   );
 }
 
-export default AddTask;
+export default React.memo(AddTask) ;

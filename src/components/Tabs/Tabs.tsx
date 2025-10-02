@@ -1,5 +1,6 @@
-import {Button, Flex} from 'antd';
+import React from 'react';
 
+import {Button, Flex} from 'antd';
 import type { TabsProps, ParameterFilter } from "../../types/types";
 
 import styles from "./Tabs.module.css";
@@ -48,4 +49,4 @@ import styles from "./Tabs.module.css";
   );
 }
 
-export default Tabs;
+export default React.memo(Tabs);

@@ -141,4 +141,4 @@ import styles from "./TodoItem.module.css";
 }
 
 
-export default TodoItem;
+export default React.memo(TodoItem);

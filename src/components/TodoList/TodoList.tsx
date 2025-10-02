@@ -1,3 +1,4 @@
+import React from "react";
 import TodoItem from "../TodoItem/TodoItem";
 
 import {List, Spin, Space, Typography} from 'antd';
@@ -31,4 +32,4 @@ import styles from "./TodoList.module.css";
   );
 }
 
-export default TodoList;
+export default React.memo(TodoList);
