@@ -2,10 +2,11 @@
     width: 220px;
     height: 30px;
     border-bottom: solid rgb(219,222,227);
+    background-color: transparent;
+}
 
-    &::placeholder {
-        color: rgb(155,158,163)
-    }
+.add-task__input::placeholder {
+    color: rgb(155,158,163);
 }
 
 .add-task__btn {
@@ -22,16 +23,4 @@
 
 .add-task__btn:active {
     scale: 0.95;
-}
-
-.tabs-error {
-    color: red;
-    width: 320px;
-    margin-top: 10px;
-}
-
-.validate-error {
-    color: red;
-    margin-top: 10px;
-    width: 320px;
 }

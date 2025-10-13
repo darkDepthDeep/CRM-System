@@ -15,7 +15,8 @@
 }
 
 .tabs-header__btn:hover {
-    color: #30a2dc;
+    color: #30a2dc !important;
+    background: transparent !important;
 }
 
 .tabs-error {
