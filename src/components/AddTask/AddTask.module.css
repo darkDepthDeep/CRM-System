@@ -1,0 +1,26 @@
+.add-task__input {
+    width: 220px;
+    height: 30px;
+    border-bottom: solid rgb(219,222,227);
+    background-color: transparent;
+}
+
+.add-task__input::placeholder {
+    color: rgb(155,158,163);
+}
+
+.add-task__btn {
+    width: 90px;
+    height: 35px;
+    border: none;
+    border-radius: 5px;
+    background-color:rgb(81,145,253);
+    color: white;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: scale 0.1s;
+}
+
+.add-task__btn:active {
+    scale: 0.95;
+}

@@ -1,0 +1,17 @@
+.tabs-body {
+    display: none;
+    margin-top: 10px;
+    text-align: left;
+    min-height: 50px;
+}
+
+.tabs-body.active {
+    display: block;
+}
+
+.tabs-error {
+    width: 320px;
+    padding-top: 10px;
+    color: red;
+    text-align: center;
+}
