@@ -6,7 +6,7 @@ const BASE_URL = 'https://easydev.club/api/v1';
 
 export const apiClient = axios.create({
     baseURL: BASE_URL,
-    timeout: 10000,
+    timeout: 100000,
     headers: {
         'Content-Type': 'application/json'
     }
