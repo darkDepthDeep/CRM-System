@@ -21,13 +21,13 @@ const siderStyle: React.CSSProperties = {
 
 const items: MenuItem[] = [
     {
-    key: "/profile",
-    label: <Link to={"/profile"}>Профиль</Link>,
+    key: "/app/profile",
+    label: <Link to={"profile"}>Профиль</Link>,
     icon: React.createElement(ScheduleOutlined),
   },
   {
-    key: "/",
-    label: <Link to={"/"}>Список задач</Link>,
+    key: "/app/tasks",
+    label: <Link to={"tasks"}>Список задач</Link>,
     icon: React.createElement(UserOutlined),
   }
 ];
@@ -36,7 +36,7 @@ const SideMenu: React.FC = () => {
     const location = useLocation();
 
     const {
-        token: { colorBgContainer, borderRadiusLG },
+        token: { colorBgContainer },
     } = theme.useToken();
 
     return (
@@ -45,14 +45,14 @@ const SideMenu: React.FC = () => {
         <Menu theme="dark" defaultSelectedKeys={[location.pathname]} mode="inline" items={items} />
       </Sider>
       <Layout>
-        <Content style={{ margin: '0' }}>
-          <div
-            style={{
-              padding: '250px 0 0 650px',
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
-          >
+        <Content style={{ 
+          margin: '0', 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          backgroundColor: colorBgContainer,
+          }}>
+          <div>
             <Outlet />
           </div>
         </Content>

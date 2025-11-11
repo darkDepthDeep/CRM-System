@@ -1,5 +1,5 @@
 import axios from "axios";
-import { apiClient } from "./axiosConfig";
+import { apiClient } from "../services/axiosConfig";
 import type {UpdateTask, TaskResponse, Task, Info, ParameterFilter} from "../types/types";
 
 export const fetchTodoList = async (filter: ParameterFilter): Promise<TaskResponse<Task, Info>> => {
@@ -41,7 +41,6 @@ export const addTask = async (data: string): Promise<TaskResponse<Task, Info>> =
     throw error;
   }
 }
-
 
 export const updateTask = async (id: number, data: UpdateTask): Promise<TaskResponse<Task, Info>>  => {
   try {

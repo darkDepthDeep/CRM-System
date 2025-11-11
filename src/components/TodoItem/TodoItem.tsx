@@ -2,9 +2,9 @@ import React from "react";
 
 import { useState } from "react";
 import { updateTask, deleteTask } from "../../api/http";
-import {Input, Form, message, Checkbox, Button, Space, Typography, List} from 'antd';
+import { Input, Form, message, Checkbox, Button, Space, Typography, List } from 'antd';
 import { validationTaskTitle } from "../../utils/validation";
-import {SaveOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons'
+import { SaveOutlined, CloseOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
 import type { TodoItemProps } from "../../types/types";
 

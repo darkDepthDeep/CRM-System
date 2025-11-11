@@ -1,5 +1,5 @@
 .todo-list {
-  min-width: 363px;
+  max-width: 363px;
   padding: 20px;
   background: linear-gradient(#f1f4fb, #c4c7cc);
 }
