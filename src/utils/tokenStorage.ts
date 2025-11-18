@@ -1,23 +1,4 @@
 export const tokenStorage = {
-    setAccessToken: (token: string): void => {
-        try {
-            localStorage.setItem('accessToken', token);
-            console.log('Access токен сохранен');
-        } catch (error) {
-            console.error('Ошибка сохранения Access Token', error)
-            throw new Error('Не удалось сохранить токен')
-        }
-    },
-
-
-    getAccessToken: () => {
-        try {
-            return localStorage.getItem('accessToken');
-        } catch (error) {
-            console.error('Ошибка получения Access Token', error)
-            return null;
-        }
-    },
 
     setRefreshToken: (token:string): void => {
         try {
@@ -47,14 +28,12 @@ export const tokenStorage = {
         }
     },
 
-    removeTokens: (): void => {
+    removeRefreshToken(): void {
         try {
-            localStorage.removeItem('accessToken');
-
             document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            console.log('Токены удалены')
         } catch (error) {
-            console.error('Ошибка удаления токенов', error)
+            console.error('Ошибка удаления Refresh Token', error);
         }
     }
 }
+

@@ -1,5 +1,5 @@
 import axios, { type AxiosRequestConfig } from "axios";
-import { tokenStorage } from "../utils/tokenStorage";
+import { tokenService } from "../utils/tokenService";
 import { refreshAccessToken } from "../utils/refreshAccessToken";
 
 const BASE_URL = 'https://easydev.club/api/v1';
@@ -13,7 +13,7 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-    const token = tokenStorage.getAccessToken();
+    const token = tokenService.getAccessToken();
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
@@ -59,7 +59,7 @@ apiClient.interceptors.response.use(
                 const newAccessToken = await refreshAccessToken();
 
                 if (!newAccessToken) {
-                    tokenStorage.removeTokens();
+                    tokenService.clearAccessToken();
                     window.location.href = '/auth';
                     return Promise.reject(error);
                 }
@@ -71,7 +71,7 @@ apiClient.interceptors.response.use(
                 return apiClient(originalRequest);
             } catch (error) {
                 isRefreshing = false;
-                tokenStorage.removeTokens();
+                tokenService.clearAccessToken();
                 window.location.href = '/auth';
                 return Promise.reject(error);
             }

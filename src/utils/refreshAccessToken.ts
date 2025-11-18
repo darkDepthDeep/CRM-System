@@ -1,9 +1,10 @@
-import { tokenStorage } from "./tokenStorage";
+import { tokenService } from "./tokenService";
 
 const BASE_URL = 'https://easydev.club/api/v1';
 
 export const refreshAccessToken = async (): Promise<string | null> => {
-    const refreshToken = tokenStorage.getRefreshToken();
+    const refreshToken = getRefreshTokenFromCookies();
+
     if (!refreshToken) {
         console.log("Нет рефреш токена");
         return null;
@@ -23,16 +24,17 @@ export const refreshAccessToken = async (): Promise<string | null> => {
         const errorText = await response.text();
         console.error('Сервер вернул ошибку:', errorText);
         if (response.status === 401 || response.status === 400) {
-            tokenStorage.removeTokens();
+            tokenService.clearAccessToken();
+            removeRefreshTokenFromCookies();
         }
         return null
     };
 
     const data = await response.json();
-    tokenStorage.setAccessToken(data.accessToken);
+    tokenService.setAccessToken(data.accessToken);
 
     if (data.refreshToken) {
-      tokenStorage.setRefreshToken(data.refreshToken);
+      setRefreshTokenInCookies(data.refreshToken);
     }
 
     return data.accessToken;
@@ -41,3 +43,38 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     return null;
   }
 };
+
+function getRefreshTokenFromCookies(): string | null {
+  try {
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'refreshToken') {
+        return value;
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Ошибка получения Refresh Token', error);
+    return null;
+  }
+}
+
+function setRefreshTokenInCookies(token: string): void {
+  try {
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 7); // 7 дней
+    document.cookie = `refreshToken=${token}; expires=${expires.toUTCString()}; path=/; secure; samesite=strict`;
+  } catch (error) {
+    console.error('Ошибка сохранения Refresh Token', error);
+    throw new Error('Не удалось сохранить refresh токен');
+  }
+}
+
+function removeRefreshTokenFromCookies(): void {
+  try {
+    document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  } catch (error) {
+    console.error('Ошибка удаления Refresh Token', error);
+  }
+}

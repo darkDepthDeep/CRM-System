@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiClient } from "../../services/axiosConfig";
 import { tokenStorage } from "../../utils/tokenStorage";
+import { tokenService } from "../../utils/tokenService";
 import type { AuthData } from "../../types/auth";
 import { refreshAccessToken } from "../../utils/refreshAccessToken";
 import axios from "axios";
@@ -13,7 +14,7 @@ interface AuthState {
 };
 
 const initialState: AuthState = {
-    isAuthenticated: !!tokenStorage.getAccessToken(),
+    isAuthenticated: !!tokenService.getAccessToken(),
     loading: false,
     error: null,
     authChecked: false,
@@ -25,7 +26,7 @@ export const loginUser = createAsyncThunk(
         try {
             const response = await apiClient.post("/auth/signin", authData);
 
-            tokenStorage.setAccessToken(response.data.accessToken);
+            tokenService.setAccessToken(response.data.accessToken);
             tokenStorage.setRefreshToken(response.data.refreshToken);
 
             return response.data;
@@ -49,16 +50,16 @@ export const loginUser = createAsyncThunk(
 export const restoreSession = createAsyncThunk(
     'auth/restoreSession',
     async () => {
-        const accessToken = tokenStorage.getAccessToken();
+        const accessToken = tokenService.getAccessToken();
         const refreshToken = tokenStorage.getRefreshToken();
 
         if (accessToken) {
-        return true;
+            return true;
         }
 
         if (refreshToken) {
-        const newToken = await refreshAccessToken();
-        return !!newToken;
+            const newToken = await refreshAccessToken();
+            return !!newToken;
         }
 
         return false;
@@ -70,7 +71,8 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         logout: (state) => {
-            tokenStorage.removeTokens();
+            tokenService.clearAccessToken();
+            tokenStorage.removeRefreshToken();
             state.isAuthenticated = false;
             state.authChecked = true;
         },
