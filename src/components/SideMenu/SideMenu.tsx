@@ -1,23 +1,12 @@
 import React from 'react';
 import { UserOutlined, ScheduleOutlined, } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Layout, Menu, theme } from 'antd';
-import { Outlet, Link, useLocation } from 'react-router';
+import { Layout, Menu } from 'antd';
+import { Link, useLocation } from 'react-router';
 
-const { Content, Sider } = Layout;
+const { Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
-
-const siderStyle: React.CSSProperties = {
-  overflow: 'auto',
-  height: '100vh',
-  position: 'sticky',
-  insetInlineStart: 0,
-  top: 0,
-  bottom: 0,
-  scrollbarWidth: 'thin',
-  scrollbarGutter: 'stable',
-};
 
 const items: MenuItem[] = [
     {
@@ -35,29 +24,20 @@ const items: MenuItem[] = [
 const SideMenu: React.FC = () => {
     const location = useLocation();
 
-    const {
-        token: { colorBgContainer },
-    } = theme.useToken();
-
     return (
-    <Layout>
-      <Sider style={siderStyle}>
-        <Menu theme="dark" defaultSelectedKeys={[location.pathname]} mode="inline" items={items} />
+    <Sider
+        breakpoint="xxl"
+        collapsedWidth="0"
+        theme="light"
+      >
+        <Menu
+          mode="inline"
+          selectedKeys={[location.pathname]}
+          items={items}
+          theme="dark"
+          style={{height: '100vh'}}
+        />
       </Sider>
-      <Layout>
-        <Content style={{ 
-          margin: '0', 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          backgroundColor: colorBgContainer,
-          }}>
-          <div>
-            <Outlet />
-          </div>
-        </Content>
-      </Layout>
-    </Layout>
     )
 }
 

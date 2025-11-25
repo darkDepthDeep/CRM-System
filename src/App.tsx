@@ -5,13 +5,14 @@ import { useSelector } from 'react-redux';
 import { Spin, Flex } from 'antd';
 import type { RootState } from './store';
 
-import SideMenu from "./components/SideMenu/SideMenu";
 import TodoListPage from "./pages/TodoListPage";
 import Profile from "./components/Profile/Profile";
 import RegistrationForm from "./components/RegistrationForm/RegistrationForm";
 import AuthForm from "./components/AuthForm/AuthForm";
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AppInitalizer from './components/AppInitializer/AppInitializer';
+import AuthLayout from './Layout/AuthLayout';
+import MainLayout from './Layout/MainLayout';
 import "./App.css";
 
 const RootRedirect = () => {
@@ -39,21 +40,15 @@ export default function App() {
         <AppInitalizer />
         <Routes>
           <Route path="/" element={<RootRedirect />} />
-          <Route path="/auth" element={<AuthForm />}/>
-          <Route path="/registration" element={<RegistrationForm />}/>
 
-          <Route path="/app" element={<SideMenu />}>
-            <Route path="tasks" element={
-              <ProtectedRoute>
-                <TodoListPage/>
-              </ProtectedRoute> } 
-              />
+          <Route element={<AuthLayout />}>
+            <Route path="/auth" element={<AuthForm />}/>
+            <Route path="/registration" element={<RegistrationForm />}/>
+          </Route>
 
-            <Route path="profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>}
-              />
+          <Route path="/app" element={<MainLayout />}>
+            <Route path="tasks" element={<ProtectedRoute><TodoListPage/></ProtectedRoute> }/>
+            <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
           </Route>
           
         </Routes>

@@ -2,15 +2,29 @@ import React from "react";
 
 import { useState } from "react";
 import { updateTask, deleteTask } from "../../api/http";
-import { Input, Form, message, Checkbox, Button, Space, Typography, List } from 'antd';
-import { validationTaskTitle } from "../../utils/validation";
-import { SaveOutlined, CloseOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import {
+  Input,
+  Form,
+  message,
+  Checkbox,
+  Button,
+  Space,
+  Typography,
+  List,
+} from "antd";
+import { validationTaskTitle } from "../../validations/todos";
+import {
+  SaveOutlined,
+  CloseOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 
 import type { TodoItemProps } from "../../types/types";
 
 import styles from "./TodoItem.module.css";
 
- const TodoItem: React.FC<TodoItemProps> =  ({ item, getTasks }) => {
+const TodoItem: React.FC<TodoItemProps> = ({ item, getTasks }) => {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [form] = Form.useForm();
   const [showMessage, messagePlace] = message.useMessage();
@@ -25,12 +39,12 @@ import styles from "./TodoItem.module.css";
       await getTasks();
     } catch (error) {
       console.error(error);
-      showMessage.error("Что то пошло не так, попробуйте позже!");     
+      showMessage.error("Что то пошло не так, попробуйте позже!");
     }
   };
 
   const handleStartEdit = (): void => {
-    form.setFieldValue('title', item.title);
+    form.setFieldValue("title", item.title);
     setIsEditMode(true);
   };
 
@@ -39,7 +53,7 @@ import styles from "./TodoItem.module.css";
     form.resetFields();
   };
 
-  const handleSaveEdit = async (values: {title: string}): Promise<void> => {
+  const handleSaveEdit = async (values: { title: string }): Promise<void> => {
     try {
       await updateTask(item.id, {
         title: values.title.trim(),
@@ -50,7 +64,7 @@ import styles from "./TodoItem.module.css";
       setIsEditMode(false);
     } catch (error: unknown) {
       console.error(error);
-      showMessage.error("Что то пошло не так, попробуйте позже!"); 
+      showMessage.error("Что то пошло не так, попробуйте позже!");
     }
   };
 
@@ -64,13 +78,13 @@ import styles from "./TodoItem.module.css";
     }
   };
 
-  return  (
+  return (
     <List.Item className={styles["tabs-body__list"]}>
       <Space.Compact className={styles["tabs-body__wrap-input"]}>
         <Checkbox
           checked={item.isDone}
           onChange={handleChange}
-          className={`${isEditMode ? styles["tabs-body__input-checkbox"] : ''}`}
+          className={`${isEditMode ? styles["tabs-body__input-checkbox"] : ""}`}
         />
         {isEditMode ? (
           <>
@@ -81,31 +95,30 @@ import styles from "./TodoItem.module.css";
               autoComplete="off"
               initialValues={{ title: item.title }}
             >
-                <Form.Item
-                  name="title"
-                  rules={validationTaskTitle}
-                >
-                  <Input 
-                    placeholder="Введите текст"
-                    variant="borderless"
-                    className={`${styles['tabs-body__input-text']} ${isEditMode ? styles['tabs-body__input-text--visible'] : ''}`}
-                    />
-                </Form.Item>
+              <Form.Item name="title" rules={validationTaskTitle}>
+                <Input
+                  placeholder="Введите текст"
+                  variant="borderless"
+                  className={`${styles["tabs-body__input-text"]} ${
+                    isEditMode ? styles["tabs-body__input-text--visible"] : ""
+                  }`}
+                />
+              </Form.Item>
 
-                <Space size="small">
-                  <Button 
-                    type="primary"
-                    icon={<SaveOutlined />}
-                    htmlType="submit"
-                    size="small"
-                  />
+              <Space size="small">
+                <Button
+                  type="primary"
+                  icon={<SaveOutlined />}
+                  htmlType="submit"
+                  size="small"
+                />
 
-                  <Button 
-                    icon={<CloseOutlined />} 
-                    onClick={handleCancelEdit}
-                    size="small"
-                  />
-                </Space>
+                <Button
+                  icon={<CloseOutlined />}
+                  onClick={handleCancelEdit}
+                  size="small"
+                />
+              </Space>
             </Form>
           </>
         ) : (
@@ -120,13 +133,13 @@ import styles from "./TodoItem.module.css";
               {item.title}
             </Typography.Text>
             <Space className={styles["tabs-body__wrap-btn"]}>
-              <Button 
-                icon={<EditOutlined style={{color: '#0000ff'}}/>}
+              <Button
+                icon={<EditOutlined style={{ color: "#0000ff" }} />}
                 onClick={handleStartEdit}
                 type="text"
               />
-              <Button 
-                icon={<DeleteOutlined />} 
+              <Button
+                icon={<DeleteOutlined />}
                 onClick={handleDeleteTask}
                 size="small"
                 type="text"
@@ -138,7 +151,6 @@ import styles from "./TodoItem.module.css";
       </Space.Compact>
     </List.Item>
   );
-}
-
+};
 
 export default React.memo(TodoItem);
