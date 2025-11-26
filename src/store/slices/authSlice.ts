@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiClient } from "../../services/axiosConfig";
-import { tokenService } from "../../utils/tokenService";
+import { tokenStorage } from "../../utils/tokenStorage";
 import type { AuthData } from "../../types/auth";
+import { refreshAuthSession } from "../../services/authService";
 import axios from "axios";
 
 interface AuthState {
@@ -12,7 +13,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  isAuthenticated: !!tokenService.getAccessToken(),
+  isAuthenticated: false,
   loading: false,
   error: null,
   authChecked: false,
@@ -24,7 +25,8 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await apiClient.post("/auth/signin", authData);
 
-      tokenService.setAccessToken(response.data.accessToken);
+      tokenStorage.setAccessToken(response.data.accessToken);
+      tokenStorage.setRefreshToken(response.data.refreshToken);
 
       return response.data;
     } catch (error: unknown) {
@@ -47,15 +49,14 @@ export const loginUser = createAsyncThunk(
 export const restoreSession = createAsyncThunk(
   "auth/restoreSession",
   async () => {
-    try {
-      const response = await apiClient.post<{ accessToken: string }>(
-        "/auth/refresh"
-      );
-      tokenService.setAccessToken(response.data.accessToken);
-      return true;
-    } catch {
-      return false;
+    const refreshToken = tokenStorage.getRefreshToken();
+
+    if (refreshToken) {
+      const newToken = await refreshAuthSession();
+      return !!newToken;
     }
+
+    return false;
   }
 );
 
@@ -64,7 +65,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      tokenService.clearAccessToken();
+      tokenStorage.removeTokens();
       state.isAuthenticated = false;
       state.authChecked = true;
     },

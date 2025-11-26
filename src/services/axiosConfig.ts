@@ -1,16 +1,19 @@
 import axios, { type AxiosRequestConfig } from "axios";
-import { tokenService } from "../utils/tokenService";
+import { tokenStorage } from "../utils/tokenStorage";
+import { refreshAuthSession } from "../services/authService";
 
 const BASE_URL = "https://easydev.club/api/v1";
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
-  timeout: 100000,
-  headers: { "Content-Type": "application/json" },
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = tokenService.getAccessToken();
+  const token = tokenStorage.getAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -23,6 +26,15 @@ const isAuthEndpoint = (url: string | undefined): boolean => {
 
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];
+
+const onRefreshed = (token: string) => {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback: (token: string) => void) => {
+  refreshSubscribers.push(callback);
+};
 
 apiClient.interceptors.response.use(
   (response) => response,
@@ -38,11 +50,9 @@ apiClient.interceptors.response.use(
     ) {
       if (isRefreshing) {
         return new Promise((resolve) => {
-          refreshSubscribers.push((token) => {
-            originalRequest.headers = {
-              ...originalRequest.headers,
-              Authorization: `Bearer ${token}`,
-            };
+          addRefreshSubscriber((token) => {
+            originalRequest.headers = originalRequest.headers || {};
+            originalRequest.headers.Authorization = `Bearer ${token}`;
             resolve(apiClient(originalRequest));
           });
         });
@@ -52,28 +62,24 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await apiClient.post<{ accessToken: string }>(
-          "/auth/refresh"
-        );
-        const newAccessToken = response.data.accessToken;
+        const newAccessToken = await refreshAuthSession();
 
-        tokenService.setAccessToken(newAccessToken);
-        refreshSubscribers.forEach((cb) => cb(newAccessToken));
-        refreshSubscribers = [];
+        if (!newAccessToken) {
+          tokenStorage.removeTokens();
+          window.location.href = "/auth";
+          return Promise.reject(error);
+        }
+
+        originalRequest.headers = originalRequest.headers || {};
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        onRefreshed(newAccessToken);
         isRefreshing = false;
-
-        originalRequest.headers = {
-          ...originalRequest.headers,
-          Authorization: `Bearer ${newAccessToken}`,
-        };
-
         return apiClient(originalRequest);
-      } catch (refreshError) {
+      } catch (error) {
         isRefreshing = false;
-        refreshSubscribers = [];
-        tokenService.clearAccessToken();
+        tokenStorage.removeTokens();
         window.location.href = "/auth";
-        return Promise.reject(refreshError);
+        return Promise.reject(error);
       }
     }
 
