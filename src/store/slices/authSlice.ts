@@ -49,7 +49,12 @@ export const loginUser = createAsyncThunk(
 export const restoreSession = createAsyncThunk(
   "auth/restoreSession",
   async () => {
+    const accessToken = tokenStorage.getAccessToken();
     const refreshToken = tokenStorage.getRefreshToken();
+
+    if (accessToken) {
+      return true;
+    }
 
     if (refreshToken) {
       const newToken = await refreshAuthSession();

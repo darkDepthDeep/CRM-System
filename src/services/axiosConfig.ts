@@ -66,7 +66,6 @@ apiClient.interceptors.response.use(
 
         if (!newAccessToken) {
           tokenStorage.removeTokens();
-          window.location.href = "/auth";
           return Promise.reject(error);
         }
 
@@ -78,7 +77,6 @@ apiClient.interceptors.response.use(
       } catch (error) {
         isRefreshing = false;
         tokenStorage.removeTokens();
-        window.location.href = "/auth";
         return Promise.reject(error);
       }
     }

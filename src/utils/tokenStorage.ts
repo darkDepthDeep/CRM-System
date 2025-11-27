@@ -1,13 +1,17 @@
 export class TokenStorage {
-  private accessToken: string | null = null;
+  private readonly ACCESS_TOKEN_KEY = "accessToken";
   private readonly REFRESH_TOKEN_KEY = "refreshToken";
 
   getAccessToken(): string | null {
-    return this.accessToken;
+    return localStorage.getItem(this.ACCESS_TOKEN_KEY);
   }
 
   setAccessToken(token: string | null): void {
-    this.accessToken = token;
+    if (token) {
+      localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+    } else {
+      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    }
   }
 
   getRefreshToken(): string | null {
@@ -23,7 +27,7 @@ export class TokenStorage {
   }
 
   removeTokens(): void {
-    this.accessToken = null;
+    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
   }
 }
