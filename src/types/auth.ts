@@ -25,7 +25,7 @@ export interface Profile {
   phoneNumber: string;
 }
 
-export interface ProfileRequest {
+export interface UpdateProfileRequest {
   username: string;
   email: string;
   phoneNumber: string;
@@ -40,4 +40,4 @@ export interface Token {
   refreshToken: string;
 }
 
-export type Role = 'ADMIN' | 'USER' | 'MODERATOR';
+export type Role = "ADMIN" | "USER" | "MODERATOR";

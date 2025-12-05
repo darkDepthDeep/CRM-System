@@ -17,8 +17,7 @@ const AddTask: React.FC<AddTaskProps> = ({ getTasks }) => {
       await getTasks();
       form.resetFields();
     } catch (error) {
-      console.error(error);
-      showMessage.error("Что то пошло не так, попробуйте позже.");
+      showMessage.error(`Что-то пошло не так, попробуйте позже. ${error}`);
     }
   };
 

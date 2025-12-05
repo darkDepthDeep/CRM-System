@@ -34,7 +34,7 @@ export const loginUser = createAsyncThunk(
         if (error.response?.status === 401) {
           return rejectWithValue("Неверные логин или пароль");
         }
-        return rejectWithValue("Ошибка сервера попробуйте позже");
+        return rejectWithValue("Ошибка сервера, попробуйте позже");
       }
 
       if (error instanceof Error) {
@@ -110,11 +110,11 @@ const authSlice = createSlice({
         state.authChecked = true;
         state.error = null;
       })
-      .addCase(restoreSession.rejected, (state) => {
+      .addCase(restoreSession.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.authChecked = true;
-        state.error = null;
+        state.error = action.error?.message || null;
       });
   },
 });

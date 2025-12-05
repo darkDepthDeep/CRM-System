@@ -18,6 +18,8 @@ export const refreshAuthSession = async (): Promise<string | null> => {
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
       tokenStorage.removeTokens();
+    } else {
+      console.error("Ошибка при обновлении сессии:", error);
     }
     return null;
   }

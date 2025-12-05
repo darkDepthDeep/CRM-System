@@ -74,10 +74,10 @@ apiClient.interceptors.response.use(
         onRefreshed(newAccessToken);
         isRefreshing = false;
         return apiClient(originalRequest);
-      } catch (error) {
+      } catch (refreshError) {
         isRefreshing = false;
         tokenStorage.removeTokens();
-        return Promise.reject(error);
+        return Promise.reject(refreshError);
       }
     }
 

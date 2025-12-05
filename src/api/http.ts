@@ -1,72 +1,46 @@
-import axios from "axios";
 import { apiClient } from "../services/axiosConfig";
-import type {UpdateTask, TaskResponse, Task, Info, ParameterFilter} from "../types/types";
+import type {
+  UpdateTask,
+  TaskResponse,
+  Task,
+  Info,
+  ParameterFilter,
+} from "../types/types";
 
-export const fetchTodoList = async (filter: ParameterFilter): Promise<TaskResponse<Task, Info>> => {
-  try {
-    const response = await apiClient.get(`/todos`, {
-      params: {
-        filter: filter
-      }
-    });
+export const fetchTodoList = async (
+  filter: ParameterFilter
+): Promise<TaskResponse<Task, Info>> => {
+  const response = await apiClient.get(`/todos`, {
+    params: {
+      filter: filter,
+    },
+  });
 
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(`Не удалось получить данные! Ошибка: ${error.response?.data}`);
-    } else if (error instanceof Error) {
-      console.error(error.message);
-    }
-    throw error;
-  }
-}
+  return response.data;
+};
 
-export const addTask = async (data: string): Promise<TaskResponse<Task, Info>> => {
-  try {
+export const addTask = async (
+  data: string
+): Promise<TaskResponse<Task, Info>> => {
+  const requestBody: { title: string; isDone: boolean } = {
+    title: data,
+    isDone: false,
+  };
 
-    const requestBody: {title: string, isDone: boolean} = {
-      title: data,
-      isDone: false
-    };
+  const response = await apiClient.post("/todos", requestBody);
 
-    const response = await apiClient.post("/todos", requestBody);
+  return response.data;
+};
 
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(`Что то пошло не так попробуйте позже! Ошибка: ${error.response?.data}`);
-    } else if (error instanceof Error) {
-      console.error(error.message)
-    }
-    throw error;
-  }
-}
+export const updateTask = async (
+  id: number,
+  data: UpdateTask
+): Promise<TaskResponse<Task, Info>> => {
+  const response = await apiClient.put(`/todos/${id}`, data);
 
-export const updateTask = async (id: number, data: UpdateTask): Promise<TaskResponse<Task, Info>>  => {
-  try {
-
-    const response = await apiClient.put(`/todos/${id}`, data);
-
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(`Что то пошло не так, попробуйте позже! Ошибка: ${error.response?.data}`)
-    } else if (error instanceof Error) {
-      console.error(error.message)
-    }
-    throw error;
-  }
-}
+  return response.data;
+};
 
 export const deleteTask = async (id: number): Promise<void> => {
-  try {
-    await apiClient.delete(`/todos/${id}`);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(`Что то пошло не так, попробуйте позже! Ошибка: ${error.response?.data}`)
-    } else if (error instanceof Error) {
-      console.error(error.message)
-    }
-    throw error;
-  }
-}
+  await apiClient.delete(`/todos/${id}`);
+};

@@ -1,32 +1,33 @@
 import React from "react";
 import SideMenu from "../components/SideMenu/SideMenu";
 import { Layout } from "antd";
-import { Outlet } from "react-router";
-import { theme } from 'antd';
-import AppInitalizer from "../components/AppInitializer/AppInitializer";
+import { Outlet } from "react-router-dom";
+import { theme } from "antd";
+import AppInitializer from "../components/AppInitializer/AppInitializer";
 
 const { Content } = Layout;
 
 const MainLayout: React.FC = () => {
-
-const {
+  const {
     token: { colorBgContainer },
-} = theme.useToken();
+  } = theme.useToken();
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-        <SideMenu />
-        <Layout>
-            <Content style={{ 
-                margin: '0', 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                backgroundColor: colorBgContainer,
-            }}>
-                <AppInitalizer />
-                <Outlet />
-            </Content>
+    <Layout style={{ minHeight: "100vh" }}>
+      <SideMenu />
+      <Layout>
+        <Content
+          style={{
+            margin: "0",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: colorBgContainer,
+          }}
+        >
+          <AppInitializer />
+          <Outlet />
+        </Content>
       </Layout>
     </Layout>
   );

@@ -1,16 +1,17 @@
 import { Flex, Form, Input, Button, message, Typography } from "antd";
 import { validationPassword, validationLogin } from "../../validations/auth";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../store/slices/authSlice";
 import type { AuthData } from "../../types/auth";
 import type { RootState, AppDispatch } from "../../store";
+import { ROUTES } from "../../const/routes";
 
 import styles from "./AuthForm.module.css";
 
 const { Title, Text, Link } = Typography;
 
-const AuthForm = () => {
+const AuthForm: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -21,13 +22,19 @@ const AuthForm = () => {
     try {
       await dispatch(loginUser(values)).unwrap();
       form.resetFields();
-      navigate("/app/profile", { replace: true });
+      navigate(ROUTES.APP_TASKS, { replace: true });
     } catch (error) {
+      let errorMessage = "Не удалось войти. Попробуйте позже.";
+
       if (typeof error === "string") {
-        messageApi.error(error);
-      } else {
-        messageApi.error("Не удалось войти. Попробуйте позже.");
+        errorMessage = error;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (error && typeof error === "object" && "message" in error) {
+        errorMessage = String(error.message);
       }
+
+      messageApi.error(errorMessage);
     }
   };
 

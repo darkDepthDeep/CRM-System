@@ -29,6 +29,11 @@ export const registerUser = createAsyncThunk(
         }
         return rejectWithValue("Ошибка сервера. Попробуйте позже!");
       }
+
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+
       return rejectWithValue("Неизвестная ошибка!");
     }
   }

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { restoreSession } from "../../store/slices/authSlice";
 import type { AppDispatch } from "../../store";
 
-const AppInitalizer = () => {
+const AppInitializer: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -13,4 +13,4 @@ const AppInitalizer = () => {
   return null;
 };
 
-export default AppInitalizer;
+export default AppInitializer;
