@@ -14,7 +14,7 @@ import {
   CloseCircleOutlined,
 } from "@ant-design/icons";
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const Profile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -38,77 +38,74 @@ const Profile: React.FC = () => {
     navigate(ROUTES.AUTH, { replace: true });
   };
 
-  if (loading) {
-    return (
-      <div style={{ textAlign: "center", padding: "50px" }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ textAlign: "center", color: "red", padding: "20px" }}>
-        Ошибка загрузки профиля: {error}
-      </div>
-    );
-  }
-
-  if (!data) {
-    return <div>Профиль не найден</div>;
-  }
-
   return (
     <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
       {contextHolder}
 
-      <Card>
-        <Title level={2} style={{ textAlign: "center", marginBottom: "24px" }}>
-          {" "}
-          Мой профиль{" "}
-        </Title>
-
-        <div style={{ marginBottom: "16px" }}>
-          <Text strong>Имя пользователя:</Text> <Text>{data.username}</Text>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "50px" }}>
+          <Spin size="large" />
         </div>
+      ) : error ? (
+        <Paragraph
+          style={{ textAlign: "center", color: "red", padding: "20px" }}
+        >
+          Ошибка загрузки профиля: {error}
+        </Paragraph>
+      ) : !data ? (
+        <Paragraph>Профиль не найден</Paragraph>
+      ) : (
+        <Card>
+          <Title
+            level={2}
+            style={{ textAlign: "center", marginBottom: "24px" }}
+          >
+            {" "}
+            Мой профиль{" "}
+          </Title>
 
-        <div style={{ marginBottom: "16px" }}>
-          <MailOutlined style={{ marginRight: "8px", color: "#1890ff" }} />
-          <Text strong>Email:</Text> <Text>{data.email}</Text>
-        </div>
+          <Paragraph style={{ marginBottom: "16px" }}>
+            <Text strong>Имя пользователя:</Text> <Text>{data.username}</Text>
+          </Paragraph>
 
-        <div style={{ marginBottom: "16px" }}>
-          <PhoneOutlined style={{ marginRight: "8px", color: "#52c41a" }} />
-          <Text strong>Телефон:</Text>{" "}
-          <Text>{data.phoneNumber || "Не указан"}</Text>
-        </div>
+          <Paragraph style={{ marginBottom: "16px" }}>
+            <MailOutlined style={{ marginRight: "8px", color: "#1890ff" }} />
+            <Text strong>Email:</Text> <Text>{data.email}</Text>
+          </Paragraph>
 
-        <div style={{ marginBottom: "16px" }}>
-          <Text strong>Роли:</Text>{" "}
-          {data.roles.map((role: Role) => (
-            <Tag color="blue" key={role}>
-              {role}
-            </Tag>
-          ))}
-        </div>
+          <Paragraph style={{ marginBottom: "16px" }}>
+            <PhoneOutlined style={{ marginRight: "8px", color: "#52c41a" }} />
+            <Text strong>Телефон:</Text>{" "}
+            <Text>{data.phoneNumber || "Не указан"}</Text>
+          </Paragraph>
 
-        <div style={{ marginBottom: "24px" }}>
-          <Text strong>Статус:</Text>{" "}
-          {data.isBlocked ? (
-            <Tag icon={<CloseCircleOutlined />} color="error">
-              Заблокирован
-            </Tag>
-          ) : (
-            <Tag icon={<CheckCircleOutlined />} color="success">
-              Активен
-            </Tag>
-          )}
-        </div>
+          <Paragraph style={{ marginBottom: "16px" }}>
+            <Text strong>Роли:</Text>{" "}
+            {data.roles.map((role: Role) => (
+              <Tag color="blue" key={role}>
+                {role}
+              </Tag>
+            ))}
+          </Paragraph>
 
-        <Button type="primary" danger block onClick={handleLogout}>
-          Выйти из аккаунта
-        </Button>
-      </Card>
+          <Paragraph style={{ marginBottom: "24px" }}>
+            <Text strong>Статус:</Text>{" "}
+            {data.isBlocked ? (
+              <Tag icon={<CloseCircleOutlined />} color="error">
+                Заблокирован
+              </Tag>
+            ) : (
+              <Tag icon={<CheckCircleOutlined />} color="success">
+                Активен
+              </Tag>
+            )}
+          </Paragraph>
+
+          <Button type="primary" danger block onClick={handleLogout}>
+            Выйти из аккаунта
+          </Button>
+        </Card>
+      )}
     </div>
   );
 };
