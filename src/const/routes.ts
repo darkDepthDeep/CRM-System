@@ -5,4 +5,5 @@ export const ROUTES = {
   APP_TASKS: "/app/tasks",
   APP_PROFILE: "/app/profile",
   ROOT: "/",
+  APP_USERS: "/app/users",
 };

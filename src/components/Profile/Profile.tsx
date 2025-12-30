@@ -26,10 +26,10 @@ const Profile: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !data && !error) {
       dispatch(fetchProfile());
     }
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, isAuthenticated, data, error]);
 
   const handleLogout = () => {
     dispatch(logout());

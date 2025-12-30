@@ -40,4 +40,13 @@ export interface Token {
   refreshToken: string;
 }
 
+export interface MetaResponse<T> {
+  data: T[];
+  meta: {
+    totalAmount: number;
+    sortBy: string;
+    sortOrder: "asc" | "desc";
+  };
+}
+
 export type Role = "ADMIN" | "USER" | "MODERATOR";

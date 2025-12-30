@@ -11,10 +11,14 @@ import Profile from "./components/Profile/Profile";
 import RegistrationForm from "./components/RegistrationForm/RegistrationForm";
 import AuthForm from "./components/AuthForm/AuthForm";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import AppInitalizer from "./components/AppInitializer/AppInitializer";
+import AppInitializer from "./components/AppInitializer/AppInitializer";
 import AuthLayout from "./Layout/AuthLayout";
 import MainLayout from "./Layout/MainLayout";
+import UserProfileEditPage from "./pages/UserProfileEditPage";
 import "./App.css";
+
+import UsersPage from "./pages/UserPage";
+import UserManagementRoute from "./components/UserManagementRoute/UserManagementRoute";
 
 const RootRedirect = () => {
   const { isAuthenticated, authChecked } = useSelector(
@@ -40,7 +44,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <AppInitalizer />
+        <AppInitializer />
         <Routes>
           <Route path={ROUTES.ROOT} element={<RootRedirect />} />
 
@@ -63,6 +67,26 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <ProtectedRoute>
+                  <UserManagementRoute>
+                    <UsersPage />
+                  </UserManagementRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="users/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <UserManagementRoute>
+                    <UserProfileEditPage />
+                  </UserManagementRoute>
                 </ProtectedRoute>
               }
             />
