@@ -314,7 +314,7 @@ const UsersPage: React.FC = () => {
             dataSource={users}
             columns={columns}
             rowKey="id"
-            pagination={{ pageSize: 20 }}
+            pagination={{ pageSize: 5 }}
             locale={{
               emptyText: error
                 ? `Ошибка: ${error}`
