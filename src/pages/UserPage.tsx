@@ -15,7 +15,7 @@ import {
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { fetchUsers, deleteUser } from "../store/slices/usersSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   blockUser,
   unblockUser,
@@ -32,11 +32,7 @@ const { Option } = Select;
 const UsersPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const {
-    data: usersRaw,
-    loading,
-    error,
-  } = useSelector((state: RootState) => state.users);
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<Profile | null>(null);
   const [sortConfig, setSortConfig] = useState<{
@@ -46,7 +42,6 @@ const UsersPage: React.FC = () => {
     sortBy: null,
     sortOrder: null,
   });
-  const users = Array.isArray(usersRaw) ? usersRaw : [];
 
   const [searchText, setSearchText] = useState<string>("");
   const [blockedFilter, setBlockedFilter] = useState<string | undefined>(
@@ -60,25 +55,34 @@ const UsersPage: React.FC = () => {
   const [userForRoles, setUserForRoles] = useState<Profile | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<Role[]>([]);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPageFromUrl = parseInt(searchParams.get("page") || "1", 10) || 1;
+  const [currentPage, setCurrentPage] = useState(currentPageFromUrl);
+
+  const {
+    data: users,
+    loading,
+    error,
+    pagination,
+  } = useSelector((state: RootState) => state.users);
+
   useEffect(() => {
-    const doFetch = () => {
-      let isBlocked: boolean | undefined;
-      if (blockedFilter === "true") isBlocked = true;
-      else if (blockedFilter === "false") isBlocked = false;
-
-      dispatch(
-        fetchUsers({
-          search: searchText || undefined,
-          sortBy: sortConfig.sortBy || undefined,
-          sortOrder: sortConfig.sortOrder || undefined,
-          isBlocked,
-        })
-      );
-    };
-
-    const timer = setTimeout(doFetch, 300);
-    return () => clearTimeout(timer);
-  }, [dispatch, searchText, sortConfig, blockedFilter]);
+    dispatch(
+      fetchUsers({
+        page: currentPage,
+        limit: 5,
+        search: searchText || undefined,
+        sortBy: sortConfig.sortBy || undefined,
+        sortOrder: sortConfig.sortOrder || undefined,
+        isBlocked:
+          blockedFilter === "true"
+            ? true
+            : blockedFilter === "false"
+            ? false
+            : undefined,
+      })
+    );
+  }, [dispatch, currentPage, searchText, sortConfig, blockedFilter]);
 
   const getRoleColor = (role: Role): string => {
     switch (role) {
@@ -175,6 +179,12 @@ const UsersPage: React.FC = () => {
     _filters: unknown,
     sorter: SorterResult<Profile> | SorterResult<Profile>[]
   ) => {
+    const newPage = _pagination.current || 1;
+    if (newPage !== currentPage) {
+      setCurrentPage(newPage);
+      setSearchParams({ page: newPage.toString() }, { replace: true });
+    }
+
     if (Array.isArray(sorter)) return;
 
     const { columnKey, order } = sorter;
@@ -314,7 +324,12 @@ const UsersPage: React.FC = () => {
             dataSource={users}
             columns={columns}
             rowKey="id"
-            pagination={{ pageSize: 5 }}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: pagination.total,
+              showSizeChanger: false,
+            }}
             locale={{
               emptyText: error
                 ? `Ошибка: ${error}`

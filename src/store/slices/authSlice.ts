@@ -2,7 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiClient } from "../../services/axiosConfig";
 import { tokenStorage } from "../../utils/tokenStorage";
 import type { AuthData } from "../../types/auth";
-import { refreshAuthSession } from "../../services/authService";
+import {
+  refreshAuthSession,
+  setAccessTokenInMemory,
+} from "../../services/authService";
 import axios from "axios";
 
 interface AuthState {
@@ -25,8 +28,11 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await apiClient.post("/auth/signin", authData);
 
-      tokenStorage.setAccessToken(response.data.accessToken);
       tokenStorage.setRefreshToken(response.data.refreshToken);
+
+      const { accessToken, refreshToken } = response.data;
+      tokenStorage.setRefreshToken(refreshToken);
+      setAccessTokenInMemory(accessToken);
 
       return response.data;
     } catch (error: unknown) {
@@ -49,12 +55,7 @@ export const loginUser = createAsyncThunk(
 export const restoreSession = createAsyncThunk(
   "auth/restoreSession",
   async () => {
-    const accessToken = tokenStorage.getAccessToken();
     const refreshToken = tokenStorage.getRefreshToken();
-
-    if (accessToken) {
-      return true;
-    }
 
     if (refreshToken) {
       const newToken = await refreshAuthSession();

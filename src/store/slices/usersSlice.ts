@@ -9,6 +9,12 @@ interface UsersState {
   loading: boolean;
   loadingSelected: boolean;
   error: string | null;
+  pagination: {
+    current: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 const initialState: UsersState = {
@@ -17,17 +23,27 @@ const initialState: UsersState = {
   loading: false,
   loadingSelected: false,
   error: null,
+  pagination: {
+    current: 1,
+    pageSize: 5,
+    total: 0,
+    totalPages: 1,
+  },
 };
 
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (
     {
+      page = 1,
+      limit = 5,
       search,
       sortBy,
       sortOrder,
       isBlocked,
     }: {
+      page?: number;
+      limit?: number;
       search?: string;
       sortBy?: string;
       sortOrder?: "asc" | "desc";
@@ -37,6 +53,9 @@ export const fetchUsers = createAsyncThunk(
   ) => {
     try {
       const params = new URLSearchParams();
+      params.set("page", page.toString());
+      params.set("limit", limit.toString());
+
       if (search) {
         params.set("search", search);
       }
@@ -57,7 +76,12 @@ export const fetchUsers = createAsyncThunk(
         `/admin/users?${params.toString()}`
       );
 
-      return response.data.data;
+      return {
+        users: response.data.data,
+        totalAmount: response.data.meta.totalAmount,
+        page,
+        limit,
+      };
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const message =
@@ -227,8 +251,15 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
+        const { users, totalAmount, page, limit } = action.payload;
         state.loading = false;
-        state.data = action.payload;
+        state.data = users;
+        state.pagination = {
+          current: page,
+          pageSize: limit,
+          total: totalAmount,
+          totalPages: Math.ceil(totalAmount / limit),
+        };
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;

@@ -12,11 +12,11 @@ interface UserManagementRouteProps {
 const UserManagementRoute: React.FC<UserManagementRouteProps> = ({
   children,
 }) => {
-  const { data: profile, loading } = useSelector(
+  const { data: profile, checked } = useSelector(
     (state: RootState) => state.profile
   );
 
-  if (loading) {
+  if (!checked) {
     return (
       <Flex align="center" justify="center" style={{ height: "100vh" }}>
         <Spin size="large" />
