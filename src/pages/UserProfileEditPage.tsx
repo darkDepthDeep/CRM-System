@@ -11,6 +11,7 @@ import {
   validationEmail,
   validationPhone,
 } from "../validations/auth";
+import { getChangedFields } from "../utils/compareObjects";
 
 const UserProfileEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +20,7 @@ const UserProfileEditPage: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const { selectedUser, loadingSelected, error } = useSelector(
-    (state: RootState) => state.users
+    (state: RootState) => state.users,
   );
 
   const [form] = Form.useForm();
@@ -43,36 +44,27 @@ const UserProfileEditPage: React.FC = () => {
   const onFinish = async (values: Partial<Profile>) => {
     if (!id || !selectedUser) return;
 
-    const changedValues: Partial<Profile> = {};
-    if (values.username !== selectedUser.username) {
-      changedValues.username = values.username;
-    }
-    if (values.email !== selectedUser.email) {
-      changedValues.email = values.email;
-    }
-    if (values.phoneNumber !== selectedUser.phoneNumber) {
-      changedValues.phoneNumber = values.phoneNumber;
-    }
+    const changedFields = getChangedFields(selectedUser, values, [
+      "username",
+      "email",
+      "phoneNumber",
+    ]);
 
-    if (Object.keys(changedValues).length === 0) {
+    if (Object.keys(changedFields).length === 0) {
       messageApi.info("Нет изменений для сохранения");
       return;
     }
 
     try {
-      await dispatch(updateUser({ id, data: changedValues })).unwrap();
+      await dispatch(updateUser({ id, data: changedFields })).unwrap();
       messageApi.success("Данные успешно обновлены");
-
-      setTimeout(() => {
-        navigate(ROUTES.APP_USERS);
-      }, 1000);
     } catch (err: unknown) {
       const errorMessage =
         typeof err === "string"
           ? err
           : err instanceof Error
-          ? err.message
-          : "Неизвестная ошибка";
+            ? err.message
+            : "Неизвестная ошибка";
       messageApi.error(errorMessage);
     }
   };

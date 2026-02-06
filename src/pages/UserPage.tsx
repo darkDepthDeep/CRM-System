@@ -16,6 +16,7 @@ import {
 import { SearchOutlined } from "@ant-design/icons";
 import { fetchUsers, deleteUser } from "../store/slices/usersSlice";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { getRoleColor } from "../const/roles";
 import {
   blockUser,
   unblockUser,
@@ -29,7 +30,7 @@ import type { ColumnType, TablePaginationConfig } from "antd/es/table";
 
 const { Option } = Select;
 
-const UsersPage: React.FC = () => {
+const UserPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -45,7 +46,7 @@ const UsersPage: React.FC = () => {
 
   const [searchText, setSearchText] = useState<string>("");
   const [blockedFilter, setBlockedFilter] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [blockModalOpen, setBlockModalOpen] = useState(false);
   const [userToBlock, setUserToBlock] = useState<Profile | null>(null);
@@ -78,24 +79,11 @@ const UsersPage: React.FC = () => {
           blockedFilter === "true"
             ? true
             : blockedFilter === "false"
-            ? false
-            : undefined,
-      })
+              ? false
+              : undefined,
+      }),
     );
   }, [dispatch, currentPage, searchText, sortConfig, blockedFilter]);
-
-  const getRoleColor = (role: Role): string => {
-    switch (role) {
-      case "ADMIN":
-        return "red";
-      case "MODERATOR":
-        return "gold";
-      case "USER":
-        return "blue";
-      default:
-        return "default";
-    }
-  };
 
   const showDeleteModal = (record: Profile) => {
     setUserToDelete(record);
@@ -128,7 +116,7 @@ const UsersPage: React.FC = () => {
 
     try {
       await dispatch(
-        updateUserRoles({ id: String(userForRoles.id), roles: selectedRoles })
+        updateUserRoles({ id: String(userForRoles.id), roles: selectedRoles }),
       ).unwrap();
       messageApi.success("Роли обновлены");
     } catch (err: unknown) {
@@ -177,7 +165,7 @@ const UsersPage: React.FC = () => {
   const handleTableChange = (
     _pagination: TablePaginationConfig,
     _filters: unknown,
-    sorter: SorterResult<Profile> | SorterResult<Profile>[]
+    sorter: SorterResult<Profile> | SorterResult<Profile>[],
   ) => {
     const newPage = _pagination.current || 1;
     if (newPage !== currentPage) {
@@ -334,8 +322,8 @@ const UsersPage: React.FC = () => {
               emptyText: error
                 ? `Ошибка: ${error}`
                 : loading
-                ? "Загрузка..."
-                : "Пользователи не найдены",
+                  ? "Загрузка..."
+                  : "Пользователи не найдены",
             }}
             loading={loading && users.length === 0}
             onChange={handleTableChange}
@@ -411,4 +399,4 @@ const UsersPage: React.FC = () => {
   );
 };
 
-export default UsersPage;
+export default UserPage;

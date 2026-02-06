@@ -49,7 +49,7 @@ export const fetchUsers = createAsyncThunk(
       sortOrder?: "asc" | "desc";
       isBlocked?: boolean;
     },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const params = new URLSearchParams();
@@ -73,7 +73,7 @@ export const fetchUsers = createAsyncThunk(
       }
 
       const response = await apiClient.get<MetaResponse<Profile>>(
-        `/admin/users?${params.toString()}`
+        `/admin/users?${params.toString()}`,
       );
 
       return {
@@ -96,7 +96,7 @@ export const fetchUsers = createAsyncThunk(
       }
       return rejectWithValue("Неизвестная ошибка при загрузке пользователей");
     }
-  }
+  },
 );
 
 export const fetchUserById = createAsyncThunk(
@@ -119,14 +119,14 @@ export const fetchUserById = createAsyncThunk(
       }
       return rejectWithValue("Неизвестная ошибка");
     }
-  }
+  },
 );
 
 export const updateUser = createAsyncThunk(
   "users/updateUser",
   async (
     { id, data }: { id: string; data: Partial<Profile> },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const response = await apiClient.put<Profile>(`/admin/users/${id}`, data);
@@ -145,33 +145,30 @@ export const updateUser = createAsyncThunk(
       }
       return rejectWithValue("Неизвестная ошибка при обновлении");
     }
-  }
+  },
 );
 
 export const deleteUser = createAsyncThunk(
   "users/deleteUser",
   async (userId: string, { rejectWithValue }) => {
-    console.log(">>> Отправка DELETE запроса на /admin/users/" + userId);
     try {
       await apiClient.delete<void>(`/admin/users/${userId}`);
-      console.log("Успешно удалён ID:", userId);
       return userId;
     } catch (error: unknown) {
-      console.error("Ошибка удаления:", error);
       if (axios.isAxiosError(error)) {
         const message =
           error.response?.data?.message ||
           error.response?.data ||
           error.message ||
           "Не удалось удалить пользователя";
-        return rejectWithValue(message);
+        return rejectWithValue(String(message));
       }
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
       return rejectWithValue("Неизвестная ошибка");
     }
-  }
+  },
 );
 
 export const blockUser = createAsyncThunk(
@@ -179,7 +176,7 @@ export const blockUser = createAsyncThunk(
   async (userId: string, { rejectWithValue, dispatch }) => {
     try {
       const response = await apiClient.post<Profile>(
-        `/admin/users/${userId}/block`
+        `/admin/users/${userId}/block`,
       );
       await dispatch(fetchUsers({}));
       return response.data;
@@ -187,12 +184,12 @@ export const blockUser = createAsyncThunk(
       if (axios.isAxiosError(error)) {
         return rejectWithValue(
           error.response?.data?.message ||
-            "Не удалось заблокировать пользователя"
+            "Не удалось заблокировать пользователя",
         );
       }
       return rejectWithValue("Неизвестная ошибка");
     }
-  }
+  },
 );
 
 export const unblockUser = createAsyncThunk(
@@ -200,7 +197,7 @@ export const unblockUser = createAsyncThunk(
   async (userId: string, { rejectWithValue, dispatch }) => {
     try {
       const response = await apiClient.post<Profile>(
-        `/admin/users/${userId}/unblock`
+        `/admin/users/${userId}/unblock`,
       );
       await dispatch(fetchUsers({}));
       return response.data;
@@ -208,36 +205,36 @@ export const unblockUser = createAsyncThunk(
       if (axios.isAxiosError(error)) {
         return rejectWithValue(
           error.response?.data?.message ||
-            "Не удалось разблокировать пользователя"
+            "Не удалось разблокировать пользователя",
         );
       }
       return rejectWithValue("Неизвестная ошибка");
     }
-  }
+  },
 );
 
 export const updateUserRoles = createAsyncThunk(
   "users/updateUserRoles",
   async (
     { id, roles }: { id: string; roles: Role[] },
-    { rejectWithValue, dispatch }
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const response = await apiClient.post<Profile>(
         `/admin/users/${id}/rights`,
-        { roles }
+        { roles },
       );
       await dispatch(fetchUsers({}));
       return response.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(
-          error.response?.data?.message || "Не удалось обновить роли"
+          error.response?.data?.message || "Не удалось обновить роли",
         );
       }
       return rejectWithValue("Неизвестная ошибка");
     }
-  }
+  },
 );
 
 const userSlice = createSlice({

@@ -5,7 +5,6 @@ import {
   latinLettersOnly,
   lettersOnly,
   noWhitespace,
-  emailRule,
   phoneRule,
 } from "./rules";
 
@@ -48,7 +47,8 @@ export const validationEmail = [
     message: "Это поле не может быть пустым!",
     transform: (value: string) => value.trim(),
   },
-  emailRule,
+
+  { type: "email" as const, message: "Введите корректный email адрес!" },
 ];
 
 export const validationPhone = [{ required: false }, phoneRule];

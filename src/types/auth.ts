@@ -11,7 +11,7 @@ export interface UserRegistration {
   phoneNumber: string;
 }
 
-export interface RefreshToken {
+export interface RefreshTokenRequest {
   refreshToken: string;
 }
 
@@ -19,7 +19,7 @@ export interface Profile {
   id: number;
   username: string;
   email: string;
-  date: string;
+  registrationDate: string;
   isBlocked: boolean;
   roles: Role[];
   phoneNumber: string;

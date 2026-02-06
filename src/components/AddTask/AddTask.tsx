@@ -2,10 +2,13 @@ import React from "react";
 
 import { addTask } from "../../api/http";
 import { Form, Input, Button, message } from "antd";
-import type { AddTaskProps } from "../../types/types";
 import { validationTaskTitle } from "../../validations/todos";
 
 import styles from "./AddTask.module.css";
+
+interface AddTaskProps {
+  getTasks: () => Promise<void>;
+}
 
 const AddTask: React.FC<AddTaskProps> = ({ getTasks }) => {
   const [form] = Form.useForm();
@@ -17,7 +20,9 @@ const AddTask: React.FC<AddTaskProps> = ({ getTasks }) => {
       await getTasks();
       form.resetFields();
     } catch (error) {
-      showMessage.error(`Что-то пошло не так, попробуйте позже. ${error}`);
+      showMessage.error(`Не удалось добавить задачу. Попробуйте позже.`);
+
+      console.error(`Не удалось добавить задачу! ${error}`);
     }
   };
 
