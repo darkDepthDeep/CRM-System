@@ -1,64 +1,72 @@
-import React from 'react';
-import { UserOutlined, ScheduleOutlined, } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
-import { Layout, Menu, theme } from 'antd';
-import { Outlet, Link, useLocation } from 'react-router';
+import React from "react";
+import {
+  UserOutlined,
+  ScheduleOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
+import type { MenuProps } from "antd";
+import { Layout, Menu, Spin, Flex } from "antd";
+import { Link, useLocation } from "react-router";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store";
+import { ROUTES } from "../../const/routes";
 
-const { Content, Sider } = Layout;
+const { Sider } = Layout;
 
-type MenuItem = Required<MenuProps>['items'][number];
-
-const siderStyle: React.CSSProperties = {
-  overflow: 'auto',
-  height: '100vh',
-  position: 'sticky',
-  insetInlineStart: 0,
-  top: 0,
-  bottom: 0,
-  scrollbarWidth: 'thin',
-  scrollbarGutter: 'stable',
-};
-
-const items: MenuItem[] = [
-    {
-    key: "/profile",
-    label: <Link to={"/profile"}>Профиль</Link>,
-    icon: React.createElement(ScheduleOutlined),
-  },
-  {
-    key: "/",
-    label: <Link to={"/"}>Список задач</Link>,
-    icon: React.createElement(UserOutlined),
-  }
-];
+type MenuItem = Required<MenuProps>["items"][number];
 
 const SideMenu: React.FC = () => {
-    const location = useLocation();
+  const location = useLocation();
+  const { loading, data: profile } = useSelector(
+    (state: RootState) => state.profile
+  );
 
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken();
-
+  if (loading) {
     return (
-    <Layout>
-      <Sider style={siderStyle}>
-        <Menu theme="dark" defaultSelectedKeys={[location.pathname]} mode="inline" items={items} />
+      <Sider theme="light" collapsedWidth="0">
+        <Flex align="center" justify="center" style={{ height: "100vh" }}>
+          <Spin size="small" />
+        </Flex>
       </Sider>
-      <Layout>
-        <Content style={{ margin: '0' }}>
-          <div
-            style={{
-              padding: '250px 0 0 650px',
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
-          >
-            <Outlet />
-          </div>
-        </Content>
-      </Layout>
-    </Layout>
-    )
-}
+    );
+  }
+
+  const hasUserManagementAccess = profile?.roles.some((role) => {
+    return ["ADMIN", "MODERATOR"].includes(role);
+  });
+
+  const items: MenuItem[] = [
+    {
+      key: ROUTES.APP_PROFILE,
+      label: <Link to={"profile"}>Профиль</Link>,
+      icon: React.createElement(ScheduleOutlined),
+    },
+    {
+      key: ROUTES.APP_TASKS,
+      label: <Link to={"tasks"}>Список задач</Link>,
+      icon: React.createElement(UserOutlined),
+    },
+  ];
+
+  if (hasUserManagementAccess) {
+    items.push({
+      key: ROUTES.APP_USERS,
+      label: <Link to="users">Пользователи</Link>,
+      icon: React.createElement(TeamOutlined),
+    });
+  }
+
+  return (
+    <Sider breakpoint="xxl" collapsedWidth="0" theme="light">
+      <Menu
+        mode="inline"
+        selectedKeys={[location.pathname]}
+        items={items}
+        theme="dark"
+        style={{ height: "100%" }}
+      />
+    </Sider>
+  );
+};
 
 export default SideMenu;
