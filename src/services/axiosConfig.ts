@@ -1,6 +1,9 @@
 import axios, { type AxiosRequestConfig } from "axios";
 import { tokenStorage } from "../utils/tokenStorage";
-import { refreshAuthSession } from "../services/authService";
+import {
+  getAccessTokenFromMemory,
+  refreshAuthSession,
+} from "../services/authService";
 
 const BASE_URL = "https://easydev.club/api/v1";
 
@@ -13,7 +16,7 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = tokenStorage.getAccessToken();
+  const token = getAccessTokenFromMemory();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

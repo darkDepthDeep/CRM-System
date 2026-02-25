@@ -2,15 +2,23 @@ import axios from "axios";
 import { tokenStorage } from "../utils/tokenStorage";
 import { authApi } from "../api/authApi";
 
+let currentAccessToken: string | null = null;
+
+export const getAccessTokenFromMemory = () => currentAccessToken;
+export const setAccessTokenInMemory = (token: string | null) => {
+  currentAccessToken = token;
+};
+
 export const refreshAuthSession = async (): Promise<string | null> => {
   const refreshToken = tokenStorage.getRefreshToken();
   if (!refreshToken) {
+    setAccessTokenInMemory(null);
     return null;
   }
 
   try {
     const tokens = await authApi.refreshTokens(refreshToken);
-    tokenStorage.setAccessToken(tokens.accessToken);
+    setAccessTokenInMemory(tokens.accessToken);
     if (tokens.refreshToken) {
       tokenStorage.setRefreshToken(tokens.refreshToken);
     }
@@ -21,6 +29,7 @@ export const refreshAuthSession = async (): Promise<string | null> => {
     } else {
       console.error("Ошибка при обновлении сессии:", error);
     }
+    setAccessTokenInMemory(null);
     return null;
   }
 };

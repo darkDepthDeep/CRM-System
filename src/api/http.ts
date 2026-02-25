@@ -8,9 +8,9 @@ import type {
 } from "../types/types";
 
 export const fetchTodoList = async (
-  filter: ParameterFilter
+  filter: ParameterFilter,
 ): Promise<TaskResponse<Task, Info>> => {
-  const response = await apiClient.get(`/todos`, {
+  const response = await apiClient.get<TaskResponse<Task, Info>>(`/todos`, {
     params: {
       filter: filter,
     },
@@ -20,23 +20,29 @@ export const fetchTodoList = async (
 };
 
 export const addTask = async (
-  data: string
+  title: string,
 ): Promise<TaskResponse<Task, Info>> => {
   const requestBody: { title: string; isDone: boolean } = {
-    title: data,
+    title,
     isDone: false,
   };
 
-  const response = await apiClient.post("/todos", requestBody);
+  const response = await apiClient.post<TaskResponse<Task, Info>>(
+    "/todos",
+    requestBody,
+  );
 
   return response.data;
 };
 
 export const updateTask = async (
   id: number,
-  data: UpdateTask
+  data: UpdateTask,
 ): Promise<TaskResponse<Task, Info>> => {
-  const response = await apiClient.put(`/todos/${id}`, data);
+  const response = await apiClient.put<TaskResponse<Task, Info>>(
+    `/todos/${id}`,
+    data,
+  );
 
   return response.data;
 };

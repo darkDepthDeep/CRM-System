@@ -36,11 +36,6 @@ export const lettersOnly = {
     "Можно использовать только буквы русского и латинского алфавита и без пробелов!",
 };
 
-export const emailRule = {
-  pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-  message: "Введите корректный email адрес!",
-};
-
 export const noWhitespace = {
   pattern: /^\S*$/,
   message: "Пробелы запрещены!",

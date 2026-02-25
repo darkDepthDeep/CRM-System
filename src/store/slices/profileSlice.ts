@@ -7,12 +7,14 @@ interface ProfileState {
   data: Profile | null;
   loading: boolean;
   error: string | null;
+  checked: boolean;
 }
 
 const initialState: ProfileState = {
   data: null,
   loading: false,
   error: null,
+  checked: false,
 };
 
 export const fetchProfile = createAsyncThunk(
@@ -59,11 +61,13 @@ const profileSlice = createSlice({
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
+        state.checked = true;
       })
       .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
         state.data = null;
+        state.checked = true;
       });
   },
 });

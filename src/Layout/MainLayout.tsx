@@ -3,7 +3,6 @@ import SideMenu from "../components/SideMenu/SideMenu";
 import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
 import { theme } from "antd";
-import AppInitializer from "../components/AppInitializer/AppInitializer";
 
 const { Content } = Layout;
 
@@ -25,7 +24,6 @@ const MainLayout: React.FC = () => {
             backgroundColor: colorBgContainer,
           }}
         >
-          <AppInitializer />
           <Outlet />
         </Content>
       </Layout>
